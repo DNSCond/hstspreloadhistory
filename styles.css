@@ -1,0 +1,26 @@
+tr:nth-child(2n) {
+    background-color: lightgray;
+}
+
+tr:nth-child(2n+1) {
+    background-color: white;
+}
+
+.t, .a {
+    background-color: mediumseagreen;
+}
+
+.m {
+    background-color: #ff9800;
+}
+
+.f, .r {
+    background-color: tomato;
+}
+
+.overflow-x {
+    overflow-x: auto;
+}
+
+code {background-color: lightgray;
+}

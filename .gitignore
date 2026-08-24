@@ -1,0 +1,12 @@
+piout
+piout2
+hosts
+hstscloned
+hosts-internal
+.git-env-token
+chromium/src
+*.db
+*.db-journal
+hashes.json
+raw.txt
+.idea

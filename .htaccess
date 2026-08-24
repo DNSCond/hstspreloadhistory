@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteBase /hstspreloadhistory/
+
+RewriteRule ^commit/([a-f0-9]+)/?$ commit-handler.php?commit=$1 [QSA,L]
+RewriteRule ^domain/([a-z0-9.\-A-Z]+)/?$ host-handler.php?host=$1 [QSA,L]
