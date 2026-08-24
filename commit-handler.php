@@ -12,6 +12,7 @@ if (!$commit) {
     exit;
 }
 $humanCommit = substr($commit, 0, 8);
+header('cache-control: public, max-age=432000');
 create_head3($title = "Chromium Commit \"$humanCommit\" (HSTS Preload History)", [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'canonical' => "https://antrequest.nl/hstspreloadhistory/commit/$commit/",

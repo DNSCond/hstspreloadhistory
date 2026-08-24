@@ -12,6 +12,7 @@ if (!$host) {
     http_response_code(404);
     exit;
 }
+header('cache-control: public, max-age=432000');
 create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'canonical' => "https://antrequest.nl/hstspreloadhistory/domain/$host/",

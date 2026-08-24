@@ -2,7 +2,7 @@
 use function ANTHeader\create_head3;
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
-header('cache-control: public, max-age=30');
+header('cache-control: public, max-age=432000');
 require_once "{$_SERVER['DOCUMENT_ROOT']}/require/header3/head3.php";
 create_head3($title = 'HSTS Preload History', [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
