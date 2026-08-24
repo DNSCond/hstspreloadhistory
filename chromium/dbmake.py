@@ -1,7 +1,7 @@
 import sqlite3
 
 # Connect to the database file (creates it if it doesn't exist)
-conn = sqlite3.connect("hsts_history.db")
+conn = sqlite3.connect("../hsts_history.db")
 
 # Create a cursor object (this executes your SQL statements)
 cursor = conn.cursor()

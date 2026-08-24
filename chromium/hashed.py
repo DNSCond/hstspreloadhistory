@@ -47,7 +47,7 @@ def main():
     policies = dict()
     batch = GitBatchReader()
     timer = time.perf_counter()
-    conn = sqlite3.connect("hsts_history.db")
+    conn = sqlite3.connect("../hsts_history.db")
     total_now = timer
     with conn:
         print('deleting old data')
