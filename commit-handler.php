@@ -20,7 +20,7 @@ create_head3($title = "Chromium Commit \"$humanCommit\" (HSTS Preload History)",
                 ['text' => "Chromium Commit \"$humanCommit\"", 'href' => "/hstspreloadhistory/commit/$commit/"],
         ],
 ]);
-require_once __DIR__ . '/phpmodule/opendb.php';
+require_once 'opendb.php';
 $stmt = getPDO()->prepare("SELECT * FROM commits WHERE sha=:commit;");
 $stmt->bindParam(':commit', $commit);
 $stmt->execute();
@@ -61,4 +61,7 @@ $formattedDate = gmdate('D M, Y-m-d H:i:s', $data['timestamp']) ?>
             } ?></table>
     </div>
 </main>
-
+<footer class=divs>
+    ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
+    ANTRequest is not affiliated with Google or Chromium.
+</footer>

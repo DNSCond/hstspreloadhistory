@@ -32,7 +32,7 @@ create_head3($title = 'HSTS Preload History Legend', [
                 <dt>"<code>public-suffix</code>"
                 <dd>public suffixes (e.g. TLDs or other public suffix list entries) preloaded at the owner's request.
                 <dt>"<code>public-suffix-requested</code>"
-                <dd>domains under a public suffix that have been preloaded at the request of the the public suffix owner
+                <dd>domains under a public suffix that have been preloaded at the request of the public suffix owner
                     (e.g. the registry for the TLD).
             </dl>
 </main>

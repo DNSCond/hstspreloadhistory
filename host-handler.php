@@ -28,7 +28,7 @@ create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
     <div class=overflow-x>
         <table><?= '<thead><tr><th scope=col>Commit<th scope=col>Action<th scope=col>' .
             'Policy<th scope=col>Includes SubDomains<th scope=col>Timestamp<tbody>';
-            require_once __DIR__ . '/phpmodule/opendb.php';
+            require_once 'opendb.php';
             $stmt = getPDO()->prepare("SELECT de.*, c.timestamp AS timestamp FROM domain_events de JOIN " .
                     "commits c ON c.sha = de.commit_sha WHERE de.domain = :domain ORDER BY c.timestamp DESC;");
             $stmt->bindParam(':domain', $host);
@@ -51,3 +51,7 @@ create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
             } ?></table>
     </div>
 </main>
+<footer class=divs>
+    ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
+    ANTRequest is not affiliated with Google or Chromium.
+</footer>
