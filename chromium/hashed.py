@@ -46,15 +46,18 @@ def main():
     present = set()
     policies = dict()
     batch = GitBatchReader()
-    timer = time.perf_counter()
     conn = sqlite3.connect("../hsts_history.db")
-    total_now = timer
     with conn:
+        timer = time.perf_counter()
         print('deleting old data')
         conn.execute('DELETE FROM domain_events WHERE 1;')
         conn.execute('DELETE FROM commits WHERE 1;')
-        conn.execute('VACUUM;')
-        print('deleting old data done')
+        now = time.perf_counter()
+        print(f'deleted old data in {(now - timer):.6f}s')
+    conn.execute('VACUUM;')
+    print(f'vacuumed for {(time.perf_counter() - now):.6f}s')
+    timer = time.perf_counter()
+    total_now = timer
     with conn:
         for count, o in enumerate(jsonic, start=1):
             sha_short = (sha := o["sha"])[:8]
