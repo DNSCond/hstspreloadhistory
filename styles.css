@@ -22,5 +22,18 @@ tr:nth-child(2n+1) {
     overflow-x: auto;
 }
 
-code {background-color: lightgray;
+code {
+    background-color: lightgray;
+}
+
+.table tr >td:nth-child(4) {
+    background-color: mediumseagreen;
+}
+
+.table tr >td:nth-child(5) {
+    background-color: tomato;
+}
+
+.table tr >td:nth-child(6) {
+    background-color: #ff9800;
 }

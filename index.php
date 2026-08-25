@@ -17,13 +17,13 @@ create_head3($title = 'HSTS Preload History', [
         <label>Domain: <input type=text name=query pattern="^[a-z0-9.\-A-Z]+$" size=25></label>
         <input type=hidden name=type value=domain>
         <button>Find</button>
-        please know that a proper search is on it's way.
+        please know that a proper search is on its way.
     </form>
     <!--<h2>Legend</h2><a href=legend.php>How to Read This website</a>-->
     <h2>Latest Commits</h2>
     <div class=overflow-x>
-        <table><?= '<thead><tr><th scope=col>Commit Hash<th scope=col>Timestamp<th scope=col>Message' .
-            '<th scope=col>Added<th scope=col>Removed<th scope=col>Modified<tbody>';
+        <table class=table><?= '<thead><tr><th scope=col>Commit Hash<th scope=col>Timestamp<th scope' .
+            '=col>Message<th scope=col>Added<th scope=col>Removed<th scope=col>Modified<tbody>';
             require_once 'opendb.php';
             $stmt = getPDO()->query("SELECT c.*, COUNT(CASE WHEN domain_events.action = 'a' THEN 1 END) AS"
                     . " additions_count, COUNT(CASE WHEN domain_events.action = 'r' THEN 1 END) AS removals_count, " .
@@ -35,7 +35,7 @@ create_head3($title = 'HSTS Preload History', [
                 $htmlname = htmlspecialchars12(substr("{$item['sha']}", 0, 8));
                 $rfc3339Date = gmdate('Y-m-d\\TH:i:s\\Z', $item['timestamp']);
                 $formattedDate = gmdate('D M, Y-m-d H:i:s', $item['timestamp']);
-                echo "<tr><td><a href=/hstspreloadhistory/commit/{$item['sha']}/>$htmlname" .
+                echo "<tr><td><a href='/hstspreloadhistory/commit/{$item['sha']}/'>$htmlname" .
                         "</a><td><time datetime=$rfc3339Date>$formattedDate UTC</time><td>$message";
                 echo "<td>{$item['additions_count']}<td>{$item['removals_count']}<td>{$item['modifications_count']}";
             } ?></table>
