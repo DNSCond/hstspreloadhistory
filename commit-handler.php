@@ -27,7 +27,7 @@ header('cache-control: public, max-age=432000');
 create_head3($title = "Chromium Commit \"$humanCommit\" (HSTS Preload History)", [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'canonical' => "https://antrequest.nl/hstspreloadhistory/commit/$commit/",
-        'bread' => [
+        'base' => '/hstspreloadhistory/', 'bread' => [
                 ['text' => 'HSTS Preload History', 'href' => '/hstspreloadhistory/'],
                 ['text' => "Chromium Commit \"$humanCommit\"", 'href' => "/hstspreloadhistory/commit/$commit/"],
         ],
@@ -51,11 +51,14 @@ $stmt->execute();
     <h1><?= $title ?></h1>
     <h2>Commit Details</h2>
     <dl>
+        <dt>Commit Subject
+        <dd><?= htmlspecialchars12("{$data['title']}") ?></dd>
         <dt>Commit Message
-        <dd><?= htmlspecialchars12("{$data['message']}") ?></dd>
-        <dt>Commit Timestamp
         <dd>
-            <time datetime="<?= $rfc3339Date ?>"><?= "$formattedDate UTC" ?></time>
+            <pre><?= htmlspecialchars12("{$data['message']}") ?></pre>
+        </dd>
+        <dt>Commit Timestamp
+        <dd><?= "<time datetime=$rfc3339Date>$formattedDate UTC</time>" ?></dd>
         <dt>Commit Full Hash
         <dd><code><?= "$commit" ?></code>
         <dt>Commit Additions
@@ -67,7 +70,8 @@ $stmt->execute();
         <dt>Commit Total changes
         <dd><span><?= $additions + $modifications + $removals ?></span>
     </dl>
-    <a href="<?= "https://github.com/chromium/chromium/commit/$commit" ?>">View Commit on Chromium's GitHub Mirror</a>
+    <a href="<?= "https://github.com/chromium/chromium/commit/$commit" ?>"
+    >View Commit on Chromium's GitHub Mirror (might be slow)</a>
     <h2>Preload List Changes</h2>
     <div class=overflow-x><?= '<table><thead><tr><th scope=col>Int<th scope=col>Domain' .
         '<th scope=col>Action<th scope=col>Policy<th scope=col>Includes SubDomains<tbody>';
@@ -77,7 +81,11 @@ $stmt->execute();
         $stmt->bindParam(':limit', $max);
         $stmt->execute();
         $breakpast = false;
-        foreach ($all = $stmt->fetchAll() as $item) {
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) if (processRow($row)) break;
+        function processRow($item): bool
+        {
+            global $offset, $max, $breakpast;
             $offset += 1;
             $htmldnname = htmlspecialchars12("{$item['domain']}");
             $htmlaction = match ("{$item['action']}") {
@@ -89,20 +97,27 @@ $stmt->execute();
             $rem = $offset % $max;
             if ($rem === 0) {
                 $breakpast = true;
-                break;
+                return true;
             }
             $hOffset = str_pad("$offset", 4, '0', STR_PAD_LEFT);
             $subs_class = ($subs = (bool)$item['subdomains']) ? 't' : 'f';
-            echo "<tr><td>$hOffset<td><a href=/hstspreloadhistory/domain/$htmldnname"
-                    . "/>$htmldnname</a><td class={$item['action']}>$htmlaction<td>" .
+            echo "<tr><td>$hOffset<td><a href='/hstspreloadhistory/domain/$htmldnname"
+                    . "/'>$htmldnname</a><td class={$item['action']}>$htmlaction<td>" .
                     "{$item['policy']}<td class=$subs_class>" . ($subs ? 'Yes' : 'No');
+            return false;
         }
+
         echo '</table>';
         if ($breakpast) {
             echo "<a href=?offset=$offset>View More</a>";
         } ?></div>
 </main>
 <footer class=divs>
-    ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
-    ANTRequest is not affiliated with Google or Chromium.
+    <p>ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
+        ANTRequest is not affiliated with Google or Chromium.
+    <nav>
+        <ul>
+            <li><a href=stats.php>View Query Stats</a>
+        </ul>
+    </nav>
 </footer>

@@ -30,8 +30,10 @@ create_head3($title = 'HSTS Preload History', [
                     " COUNT(CASE WHEN domain_events.action = 'm' THEN 1 END) AS modifications_count FROM commits c "
                     . "LEFT JOIN domain_events ON domain_events.commit_sha = c.sha GROUP BY c.sha, c.timestamp "
                     . "ORDER BY c.timestamp DESC");
-            foreach ($all = $stmt->fetchAll() as $item) {
-                $message = htmlspecialchars12("{$item['message']}");
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) processRow($row);
+            function processRow($item): void
+            {
+                $message = htmlspecialchars12("{$item['title']}");
                 $htmlname = htmlspecialchars12(substr("{$item['sha']}", 0, 8));
                 $rfc3339Date = gmdate('Y-m-d\\TH:i:s\\Z', $item['timestamp']);
                 $formattedDate = gmdate('D M, Y-m-d H:i:s', $item['timestamp']);
@@ -42,6 +44,11 @@ create_head3($title = 'HSTS Preload History', [
     </div>
 </div>
 <footer class=divs>
-    ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
-    ANTRequest is not affiliated with Google or Chromium.
+    <p>ANTRequest is an unofficial mirror of Chromium's HSTS Preload List source code.
+        ANTRequest is not affiliated with Google or Chromium.
+    <nav>
+        <ul>
+            <li><a href=stats.php>View Query Stats</a>
+        </ul>
+    </nav>
 </footer>

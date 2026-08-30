@@ -1,7 +1,7 @@
 import json, sqlite3, datetime, time, subprocess, re
 
-with open('hashes.json', 'rb') as file:
-    jsonic = reversed(contental := json.load(file))
+with open('hashes.json', 'rb') as inpu:
+    jsonic = reversed(contental := json.load(inpu))
 total = len(contental)
 print('start; total =', total)
 COMMENT_RE = re.compile(r'^\s*//.*$', re.MULTILINE)
@@ -41,7 +41,6 @@ class GitBatchReader:
         return None
 
 
-@lambda _: _()
 def main():
     present = set()
     policies = dict()
@@ -74,7 +73,7 @@ def main():
             blob_text = batch.get_blob(sha, CANDIDATE_PATHS)
             if not blob_text:
                 now = time.perf_counter()
-                elapsed = now - timer
+                # elapsed = now - timer
                 timer = now
                 # print(f"{count}/{total} [SKIP: File path not present in commit] {elapsed:.6f}s (sha-{sha_short})",
                 #      local.astimezone(datetime.timezone.utc))
@@ -87,7 +86,7 @@ def main():
                 entries = data.get('entries', list())
             except json.JSONDecodeError:
                 now = time.perf_counter()
-                elapsed = now - timer
+                # elapsed = now - timer
                 timer = now
                 # print(f"{count}/{total} [skipped. JSONDecodeError] {elapsed:.6f}s (sha-{sha})",
                 #      local.astimezone(datetime.timezone.utc))
@@ -117,8 +116,8 @@ def main():
             # 5. Execute DB write within a managed transaction block
 
             cursor = conn.execute(
-                "INSERT OR IGNORE INTO commits (sha, timestamp, message) VALUES (?, ?, ?)",
-                (sha, local.timestamp(), o['message'])
+                "INSERT OR IGNORE INTO commits (sha, timestamp, message, title) VALUES (?, ?, ?, ?)",
+                (sha, local.timestamp(), o['m'], o['t'])
             )
             changed_amount = int()
 
@@ -145,13 +144,20 @@ def main():
             now = time.perf_counter()
             elapsed = now - timer
             timer = now
+            added_tmp = len(added)
+            removed_tmp = len(removed)
             print(
                 f"{count:03d}/{total}",
-                f"[{len(added):04d} added] [{len(removed):04d} removed] [{changed_amount:04d} modified]",
+                f"[{added_tmp:04d} added] [{removed_tmp:04d} removed] [{changed_amount:04d} modified]",
                 f"{elapsed:.6f}s (sha-{sha_short}) {local.astimezone(datetime.timezone.utc)}"
             )
     conn.close()
-    print(f'totally it took {(time.perf_counter() - total_now):.6f}s')
+    time_taken = time.perf_counter() - total_now
+    print(f'totally that took', f"{time_taken:.6f} seconds ({(time_taken / 60):.3} minutes)")
+    return contental[0]['sha']
 
+
+if __name__ == '__main__':
+    main()
 
 pass

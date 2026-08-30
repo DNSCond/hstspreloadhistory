@@ -11,6 +11,7 @@ cursor.execute(
     (
         sha       TEXT PRIMARY KEY,
         timestamp TEXT NOT NULL,
+        title     TEXT NOT NULL,
         message   TEXT NOT NULL
     );
     ''')
@@ -36,11 +37,6 @@ cursor.execute(
     '''
     CREATE INDEX idx_domain_events_commit
         ON domain_events (commit_sha);
-    ''')
-cursor.execute(
-    '''
-    CREATE INDEX idx_commits_sha
-        ON commits (sha);
     ''')
 cursor.execute(
     '''
