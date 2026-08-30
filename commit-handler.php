@@ -22,16 +22,6 @@ if ($offset % $max !== 0) {
     header("Location: ?offset=$offset");
     exit;
 }
-$humanCommit = substr($commit, 0, 8);
-header('cache-control: public, max-age=432000');
-create_head3($title = "Chromium Commit \"$humanCommit\" (HSTS Preload History)", [
-        'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
-        'canonical' => "https://antrequest.nl/hstspreloadhistory/commit/$commit/",
-        'base' => '/hstspreloadhistory/', 'bread' => [
-                ['text' => 'HSTS Preload History', 'href' => '/hstspreloadhistory/'],
-                ['text' => "Chromium Commit \"$humanCommit\"", 'href' => "/hstspreloadhistory/commit/$commit/"],
-        ],
-]);
 require_once 'opendb.php';
 $stmt = getPDO()->prepare("SELECT * FROM commits WHERE sha=:commit;");
 $stmt->bindParam(':commit', $commit);
@@ -39,6 +29,17 @@ $stmt->execute();
 $data = $stmt->fetch();
 $rfc3339Date = gmdate('Y-m-d\\TH:i:s\\Z', $data['timestamp']);
 $formattedDate = gmdate('D M, Y-m-d H:i:s', $data['timestamp']);
+
+$humanCommit = substr($commit, 0, 8);
+header('cache-control: public, max-age=432000');
+create_head3($title = "{$data['title']} (HSTS Preload History)", [
+        'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
+        'canonical' => "https://antrequest.nl/hstspreloadhistory/commit/$commit/",
+        'base' => '/hstspreloadhistory/', 'bread' => [
+                ['text' => 'HSTS Preload History', 'href' => '/hstspreloadhistory/'],
+                ['text' => "Chromium Commit \"$humanCommit\"", 'href' => "/hstspreloadhistory/commit/$commit/"],
+        ],
+]);
 $maximum = $max;
 $max += $offset + 1;
 $stmt = getPDO()->prepare("SELECT COUNT(CASE WHEN domain_events.action = 'a' THEN 1 END) AS additions, COUNT" .
@@ -55,7 +56,9 @@ $stmt->execute();
         <dd><?= htmlspecialchars12("{$data['title']}") ?></dd>
         <dt>Commit Message
         <dd>
-            <pre><?= htmlspecialchars12("{$data['message']}") ?></pre>
+            <blockquote cite="<?= "https://chromium.googlesource.com/chromium/src/+/$commit" ?>">
+                <pre><?= htmlspecialchars12("{$data['message']}") ?></pre>
+            </blockquote>
         </dd>
         <dt>Commit Timestamp
         <dd><?= "<time datetime=$rfc3339Date>$formattedDate UTC</time>" ?></dd>
@@ -72,6 +75,8 @@ $stmt->execute();
     </dl>
     <a href="<?= "https://github.com/chromium/chromium/commit/$commit" ?>"
     >View Commit on Chromium's GitHub Mirror (might be slow)</a>
+    <a href="<?= "https://chromium.googlesource.com/chromium/src/+/$commit" ?>"
+    >View Commit on Chromium's Googlesource</a>
     <h2>Preload List Changes</h2>
     <div class=overflow-x><?= '<table><thead><tr><th scope=col>Int<th scope=col>Domain' .
         '<th scope=col>Action<th scope=col>Policy<th scope=col>Includes SubDomains<tbody>';
