@@ -73,10 +73,10 @@ $stmt->execute();
         <dt>Commit Total changes
         <dd><span><?= $additions + $modifications + $removals ?></span>
     </dl>
-    <a href="<?= "https://github.com/chromium/chromium/commit/$commit" ?>"
-    >View Commit on Chromium's GitHub Mirror (might be slow)</a>
+    <a href="<?= "https://github.com/chromium/chromium/commit/$commit" ?>" target='_blank'
+       referrerpolicy=origin>View Commit on Chromium's GitHub Mirror (might be slow)</a>
     <a href="<?= "https://chromium.googlesource.com/chromium/src/+/$commit" ?>"
-    >View Commit on Chromium's Googlesource</a>
+       target='_blank' referrerpolicy=origin>View Commit on Chromium's Googlesource</a>
     <h2>Preload List Changes</h2>
     <div class=overflow-x><?= '<table><thead><tr><th scope=col>Int<th scope=col>Domain' .
         '<th scope=col>Action<th scope=col>Policy<th scope=col>Includes SubDomains<tbody>';

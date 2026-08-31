@@ -47,7 +47,8 @@ function processRow($item): void
 <main class=divs>
     <h1><?= $title ?></h1>
     <h2>Current Status</h2>
-    <a href="<?= "https://hstspreload.org/?domain=$host#submission-form" ?>">View Current Status on hstspreload.org</a>
+    <a href="<?= "https://hstspreload.org/?domain=$host#submission-form" ?>"
+       target='_blank' referrerpolicy=origin>View Current Status on hstspreload.org</a>
     <h2>History</h2>
     <div class=overflow-x>
         <!--<?= 'TABLE-IF';
