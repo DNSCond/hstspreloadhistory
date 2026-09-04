@@ -1,16 +1,5 @@
 import json, sqlite3, datetime, time, subprocess, re
 
-with open('hashes.json', 'rb') as inpu:
-    jsonic = reversed(contental := json.load(inpu))
-total = len(contental)
-print('start; total =', total)
-COMMENT_RE = re.compile(r'^\s*//.*$', re.MULTILINE)
-CANDIDATE_PATHS = [
-    "net/http/transport_security_state_static.json",
-    "net/base/transport_security_state_static.json",
-    "net/base/transport_security_state.json",
-]
-
 
 class GitBatchReader:
     def __init__(self, repo_dir="../../../chromium-hsts"):
@@ -41,7 +30,18 @@ class GitBatchReader:
         return None
 
 
+# noinspection pep8-naming
 def main():
+    with open('hashes.json', 'rb') as inpu:
+        jsonic = reversed(contental := json.load(inpu))
+    total = len(contental)
+    print('start git batch read; total =', total)
+    COMMENT_RE = re.compile(r'^\s*//.*$', re.MULTILINE)
+    CANDIDATE_PATHS = [
+        "net/http/transport_security_state_static.json",
+        "net/base/transport_security_state_static.json",
+        "net/base/transport_security_state.json",
+    ]
     present = set()
     policies = dict()
     batch = GitBatchReader()

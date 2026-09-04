@@ -1,4 +1,5 @@
 <?php use function ANTHeader\create_head3;
+use function Helpers\htmlspecialchars12;
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
 $host = null;
@@ -22,14 +23,15 @@ create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
         ],
 ]);
 require_once 'opendb.php';
-$stmt = getPDO()->prepare("SELECT de.*, c.timestamp AS timestamp FROM domain_events de JOIN " .
-        "commits c ON c.sha = de.commit_sha WHERE de.domain = :domain ORDER BY c.timestamp DESC;");
+$stmt = getPDO()->prepare("SELECT de.*, c.timestamp AS timestamp, c.title AS title FROM domain_" .
+        "events de JOIN commits c ON c.sha = de.commit_sha WHERE de.domain = :domain ORDER BY c.timestamp DESC;");
 $stmt->bindParam(':domain', $host);
 $success = $stmt->execute();
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 function processRow($item): void
 {
     $commit = "{$item['commit_sha']}";
+    $commit_title = htmlspecialchars12("{$item['title']}");
     $humanCommit = substr($commit, 0, 8);
     $htmlaction = match ("{$item['action']}") {
         'm' => 'Modified',
@@ -40,8 +42,8 @@ function processRow($item): void
     $subs_class = ($subs = (bool)$item['subdomains']) ? 't' : 'f';
     $rfc3339Date = gmdate('Y-m-d\\TH:i:s\\Z', $item['timestamp']);
     $formattedDate = gmdate('D M, Y-m-d H:i:s', $item['timestamp']);
-    echo "<tr><td><a href=/hstspreloadhistory/commit/$commit/>$humanCommit</a><td class"
-            . "={$item['action']}>$htmlaction<td>{$item['policy']}<td class=$subs_class>" .
+    echo "<tr><td><a href=/hstspreloadhistory/commit/$commit/>$humanCommit</a><td>$commit_title"
+            . "<td class={$item['action']}>$htmlaction<td>{$item['policy']}<td class=$subs_class>" .
             ($subs ? 'Yes' : 'No') . "<td><time datetime=$rfc3339Date>$formattedDate UTC</time>";
 } ?>
 <main class=divs>
@@ -53,8 +55,8 @@ function processRow($item): void
     <div class=overflow-x>
         <!--<?= 'TABLE-IF';
         if ($row): ?>-->
-        <table><?= '<thead><tr><th scope=col>Commit<th scope=col>Action<th scope=col>' .
-            'Policy<th scope=col>Includes SubDomains<th scope=col>Timestamp<tbody>';
+        <table><?= '<thead><tr><th scope=col>Commit<th scope=col>Commit Subject<th scope=col>Action' .
+            '<th scope=col>Policy<th scope=col>Includes SubDomains<th scope=col>Timestamp<tbody>';
             processRow($row);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) processRow($row) ?></table>
         <!--<?= 'ELSE';
