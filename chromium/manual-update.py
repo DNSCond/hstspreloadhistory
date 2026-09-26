@@ -17,4 +17,4 @@ with open('../manual-update-at.txt', 'wt', encoding='utf8') as file:
     dt = datetime.datetime.now().astimezone(datetime.timezone.utc).isoformat()
     file.write(re.sub('\\.\\d+\\+00:00', 'Z', dt))
     file.write(',' + last_sha)
-pass
+input('done!')
