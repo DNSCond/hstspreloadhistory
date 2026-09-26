@@ -13,7 +13,14 @@ if (!$host) {
     http_response_code(404);
     exit;
 }
-header('cache-control: public, max-age=432000');
+require_once 'opendb.php';
+$stmt = getPDO()?->prepare("SELECT de.*, c.timestamp AS timestamp, c.title AS title FROM domain_" .
+        "events de JOIN commits c ON c.sha = de.commit_sha WHERE de.domain = :domain ORDER BY c.timestamp DESC;");
+if (!$stmt) {
+    require_once __DIR__ . '/500.php';
+    exit;
+}
+header('cache-control: public, max-age=432000, stale-while-revalidate=86400');
 create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'canonical' => "https://antrequest.nl/hstspreloadhistory/domain/$host/",
@@ -22,9 +29,6 @@ create_head3($title = "$host's HSTS Preload History (HSTS Preload History)", [
                 ['text' => "$host's HSTS Preload History", 'href' => "/hstspreloadhistory/domain/$host/"],
         ],
 ]);
-require_once 'opendb.php';
-$stmt = getPDO()->prepare("SELECT de.*, c.timestamp AS timestamp, c.title AS title FROM domain_" .
-        "events de JOIN commits c ON c.sha = de.commit_sha WHERE de.domain = :domain ORDER BY c.timestamp DESC;");
 $stmt->bindParam(':domain', $host);
 $success = $stmt->execute();
 $row = $stmt->fetch(PDO::FETCH_ASSOC);

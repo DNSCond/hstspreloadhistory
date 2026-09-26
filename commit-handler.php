@@ -23,7 +23,11 @@ if ($offset % $max !== 0) {
     exit;
 }
 require_once 'opendb.php';
-$stmt = getPDO()->prepare("SELECT * FROM commits WHERE sha=:commit;");
+$stmt = getPDO()?->prepare("SELECT * FROM commits WHERE sha=:commit;");
+if (!$stmt) {
+    require_once __DIR__ . '/500.php';
+    exit;
+}
 $stmt->bindParam(':commit', $commit);
 $stmt->execute();
 $data = $stmt->fetch();
@@ -31,9 +35,9 @@ $rfc3339Date = gmdate('Y-m-d\\TH:i:s\\Z', $data['timestamp']);
 $formattedDate = gmdate('D M, Y-m-d H:i:s', $data['timestamp']);
 
 $humanCommit = substr($commit, 0, 8);
-header('cache-control: public, max-age=432000');
+header('cache-control: public, max-age=432000, stale-while-revalidate=86400');
 create_head3($title = "{$data['title']} (HSTS Preload History)", [
-        'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
+        'stylelinks' => ['/gallery/statics/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'canonical' => "https://antrequest.nl/hstspreloadhistory/commit/$commit/",
         'base' => '/hstspreloadhistory/', 'bread' => [
                 ['text' => 'HSTS Preload History', 'href' => '/hstspreloadhistory/'],
@@ -114,7 +118,7 @@ $stmt->execute();
 
         echo '</table>';
         if ($breakpast) {
-            echo "<a href=?offset=$offset>View More</a>";
+            echo "<a href=/hstspreloadhistory/commit/$commit/?offset=$offset>View More</a>";
         } ?></div>
 </main>
 <footer class=divs>

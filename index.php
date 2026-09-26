@@ -1,9 +1,16 @@
 <?php use function Helpers\htmlspecialchars12;
 use function ANTHeader\create_head3;
 
+ini_set('display_errors', '1');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
-header('cache-control: public, max-age=432000');
 require_once "{$_SERVER['DOCUMENT_ROOT']}/require/header3/head3.php";
+require_once __DIR__ . '/opendb.php';
+$pdo = getPDO();
+if (!$pdo) {
+    require_once __DIR__ . '/500.php';
+    exit;
+}
+header('cache-control: public, max-age=432000, stale-while-revalidate=86400');
 create_head3($title = 'HSTS Preload History', [
         'stylelinks' => ['/gallery/ddDL-table.css', '/hstspreloadhistory/styles.css'],
         'base' => '/hstspreloadhistory/', 'bread' => [
@@ -24,8 +31,7 @@ create_head3($title = 'HSTS Preload History', [
     <div class=overflow-x>
         <table class=table><?= '<thead><tr><th scope=col>Commit Hash<th scope=col>Timestamp<th scope' .
             '=col>Message<th scope=col>Added<th scope=col>Removed<th scope=col>Modified<tbody>';
-            require_once 'opendb.php';
-            $stmt = getPDO()->query("SELECT c.*, COUNT(CASE WHEN domain_events.action = 'a' THEN 1 END) AS"
+            $stmt = $pdo->query("SELECT c.*, COUNT(CASE WHEN domain_events.action = 'a' THEN 1 END) AS"
                     . " additions_count, COUNT(CASE WHEN domain_events.action = 'r' THEN 1 END) AS removals_count, " .
                     " COUNT(CASE WHEN domain_events.action = 'm' THEN 1 END) AS modifications_count FROM commits c "
                     . "LEFT JOIN domain_events ON domain_events.commit_sha = c.sha GROUP BY c.sha, c.timestamp "
